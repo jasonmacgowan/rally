@@ -11,6 +11,8 @@ const path = require('path')
  *
  * Example:
  * getTemplatePath('index') will resolve to <approot>/views/index
+ * 
+ * The .hbs extension is implied
  *
  * @param {string} name
  * @returns {string} calculated filepath to template
@@ -37,8 +39,8 @@ module.exports = app => {
 
   /*
    * Serve everything under <approot>/public as static content
-   * http://127.0.0.1:3000/rally/css/main.css will server the file
-   * from <approot>/public/css/main/css
+   * http://127.0.0.1:3000/rally/css/main.css will serve the file
+   * from <approot>/public/css/main.css
    */
   router.use(express.static(path.join(__dirname, 'public')))
 

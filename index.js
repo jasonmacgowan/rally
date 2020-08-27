@@ -1,4 +1,23 @@
 const RallyValidate = require('./lib/RallyValidate')
+const express = require('express')
+const path = require('path')
+
+/**
+ * Resolve a template path by basename in the `views` directory
+ *
+ * Probot already sets a template path so we need a way to
+ * resolve where our custom templates are so we can pass a
+ * full path to res.render in our routes.
+ *
+ * Example:
+ * getTemplatePath('index') will resolve to <approot>/views/index
+ *
+ * @param {string} name
+ * @returns {string} calculated filepath to template
+ */
+function getTemplatePath(name) {
+  return path.join(__dirname, 'views', name)
+}
 
 /**
  * This is the main entrypoint to your Probot app
@@ -13,4 +32,18 @@ module.exports = app => {
 
   app.on(['check_run.rerequested', 'check_suite.rerequested'], async context => handler.rerunCheck(context))
   app.on('pull_request.closed', async context => handler.handlePullRequestClosed(context))
-}
+
+  const router = app.route('/rally')
+
+  /*
+   * Serve everything under <approot>/public as static content
+   * http://127.0.0.1:3000/rally/css/main.css will server the file
+   * from <approot>/public/css/main/css
+   */
+  router.use(express.static(path.join(__dirname, 'public')))
+
+  router.get('/', (_, res) => {
+    const index = getTemplatePath('index')
+    res.render(index, { title: 'Rally' })
+  });
+};
